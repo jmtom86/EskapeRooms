@@ -3,6 +3,7 @@
 	"version": "0.0.1",
 	"dependencies": {
 		"express": "~4.2.0",
-		"body-parser": "latest"
+		"body-parser": "latest",
+		"socket.io" : "^1.4.5"
 	}
 }

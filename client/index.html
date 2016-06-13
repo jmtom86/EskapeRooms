@@ -5,9 +5,12 @@
 	<title>EskapeRooms Timer</title>
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+    <script type ="text/javascript" src="/socket.io/socket.io.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="bootstrap-player.css">
     <script src="bootstrap-player.js"></script>
+    <link rel="stylesheet" href="flipclock.css">
+    <script type="text/javascript" src="flipclock.js    "></script>
 	<style type="text/css">
 		@font-face {
 			font-family: digital;
@@ -16,21 +19,26 @@
 
 		#top {
 			background-color: black;
-			height: 300px;
+			height: 350px;
 		}
 
 		#header, .time, .colon {
 			color: red;
 		}
 
-		.time, .colon {
-			font-size: 800%;
+		/*.time, .colon {
+			font-size: 700%;
 			font-family: digital;
             letter-spacing: 8px;
-		}
+		}*/
 
         #timerbox, #buttonbox {
             text-align: center;
+            background-color: black;
+        }
+
+        #buttonbox {
+            margin-top: 50px;
         }
 
         #buttonbox input {
@@ -45,306 +53,150 @@
 
         #hints {
             resize: none;
-            font-size: 500%;
+            font-size: 400%;
             font-family: Arial;
+            margin-top: 0px;
         }
 
         #audioarea {
-            padding-left: 50px;
+            vertical-align: center;
+            margin-top: 30px;
+            padding-left: 30px;
+            /*display: inline-block;*/
+        }
+
+        #clockbox{
+            text-align: center;
+        }
+
+        .clock {
+            display: inline-block;
+            width: auto;
         }
 	</style>
-	
-	<script type="text/javascript">
-		$(document).ready(function() {
-            var alarmEnd = document.createElement('audio');
-            alarmEnd.setAttribute('src', 'buzzer.mp3');
-            var pwmsg1 = document.createElement('audio');
-            pwmsg1.setAttribute('src','pwmsg1.mp3');
-            var pwmsg2 = document.createElement('audio');
-            pwmsg2.setAttribute('src', 'pwmsg2.mp3');
 
-            $('#btn_msg1').click(function(){
-                pwmsg1.play();
-            })
-
-            $('#btn_msg2').click(function(){
-                pwmsg2.play();
-            })
-
-            $('#hints').change(function(){
-                alert("CHANGED");
-            })
-            // alarmEnd.setAttribute('autoplay', 'autoplay');
-    (function($){
-    
-        $.extend({
-            
-            APP : {                
-                
-                formatTimer : function(a) {
-                    if (a < 10) {
-                        a = '0' + a;
-                    }                              
-                    return a;
-                },    
-                
-                startTimer : function(dir) {
-                    
-                    var a;
-                    
-                    // save type
-                    $.APP.dir = dir;
-                    
-                    // get current date
-                    $.APP.d1 = new Date();
-                    
-                    switch($.APP.state) {
-                            
-                        case 'pause' :
-                            
-                            // resume timer
-                            // get current timestamp (for calculations) and
-                            // substract time difference between pause and now
-                            $.APP.t1 = $.APP.d1.getTime() - $.APP.td;                            
-                            
-                        break;
-                            
-                        default :
-                            
-                            // get current timestamp (for calculations)
-                            $.APP.t1 = $.APP.d1.getTime(); 
-                            
-                            // if countdown add ms based on seconds in textfield
-                            if ($.APP.dir === 'cd') {
-                                $.APP.t1 += parseInt($('#cd_seconds').val())*1000;
-                            }    
-                        
-                        break;
-                            
-                    }                                   
-                    
-                    // reset state
-                    $.APP.state = 'alive';   
-                    $('#' + $.APP.dir + '_status').html('Running');
-                    
-                    // start loop
-                    $.APP.loopTimer();
-                    
-                },
-                
-                pauseTimer : function() {
-                    
-                    // save timestamp of pause
-                    $.APP.dp = new Date();
-                    $.APP.tp = $.APP.dp.getTime();
-                    
-                    // save elapsed time (until pause)
-                    $.APP.td = $.APP.tp - $.APP.t1;
-                    
-                    // change button value
-                    $('#' + $.APP.dir + '_start').val('Resume');
-                    
-                    // set state
-                    $.APP.state = 'pause';
-                    $('#' + $.APP.dir + '_status').html('Paused');
-                    
-                },
-                
-                stopTimer : function() {
-                    ç
-                    // change button value
-                    $('#' + $.APP.dir + '_start').val('Restart');                    
-                    
-                    // set state
-                    $.APP.state = 'stop';
-                    $('#' + $.APP.dir + '_status').html('Stopped');
-                    
-                },
-                
-                resetTimer : function() {
-                    // reset display
-                    $('#' + $.APP.dir + '_ms,#' + $.APP.dir + '_s,#' + $.APP.dir + '_m').html('00');        
-                    $('#' + $.APP.dir + "_m").html('60');
-                    // change button value
-                    $('#' + $.APP.dir + '_start').val('Start');                    
-                    
-                    // set state
-                    $.APP.state = 'reset';  
-                    $('#' + $.APP.dir + '_status').html('Reset & Idle again');
-                    $('#cd_seconds').val(3600)
-                },
-                
-                endTimer : function(callback) {
-                   
-                    // change button value
-                    $('#' + $.APP.dir + '_start').val('Restart');
-                    
-                    // set state
-                    $.APP.state = 'end';
-                    
-                    // invoke callback
-                    if (typeof callback === 'function') {
-                        callback();
-                    }    
-                    
-                },    
-                
-                loopTimer : function() {
-                    
-                    var td;
-                    var d2,t2;
-                    
-                    var ms = 0;
-                    var s  = 0;
-                    var m  = 0;
-                    var h  = 0;
-                    
-                    if ($.APP.state === 'alive') {
-                                
-                        // get current date and convert it into 
-                        // timestamp for calculations
-                        d2 = new Date();
-                        t2 = d2.getTime();   
-                        
-                        // calculate time difference between
-                        // initial and current timestamp
-                        if ($.APP.dir === 'sw') {
-                            td = t2 - $.APP.t1;
-                        // reversed if countdown
-                        } else {
-                            td = $.APP.t1 - t2;
-                            // console.log(td);
-                            if (td <= 0) {
-                                // if time difference is 0 end countdown
-
-                                $.APP.endTimer(function(){
-                                    alarmEnd.play();
-                                    $.APP.resetTimer();
-                                    $('#' + $.APP.dir + '_status').html('Ended & Reset');
-                                });
-                            }    
-                        }    
-                        
-                        // calculate milliseconds
-                        ms = td%1000;
-                        if (ms < 1) {
-                            ms = 0;
-                        } else {    
-                            // calculate seconds
-                            s = (td-ms)/1000;
-                            if (s < 1) {
-                                s = 0;
-                            } else {
-                                // calculate minutes   
-                                var m = (s-(s%60))/60;
-                                if (m < 1) {
-                                    m = 0;
-                                } else {
-                                    // calculate hours
-                                    var h = (m-(m%60))/60;
-                                    if (h < 1) {
-                                        h = 0;
-                                    }                             
-                                }    
-                            }
-                        }
-                      
-                        // substract elapsed minutes & hours
-                        ms = Math.round(ms/100);
-                        s  = s-(m*60);
-                        m  = m-(h*60);                                
-                        
-                        // update display
-                        // $('#' + $.APP.dir + '_ms').html($.APP.formatTimer(ms));
-                        $('#' + $.APP.dir + '_s').html($.APP.formatTimer(s));
-                        $('#' + $.APP.dir + '_m').html($.APP.formatTimer(m));
-                        // $('#' + $.APP.dir + '_h').html($.APP.formatTimer(h));
-                        
-                        // loop
-                        $.APP.t = setTimeout($.APP.loopTimer,1);
-                    
-                    } else {
-                    
-                        // kill loop
-                        clearTimeout($.APP.t);
-                        return true;
-                    
-                    }  
-                    
-                }
-                    
-            }    
-        
-        });
-          
-        // $('#sw_start').live('click', function() {
-        //     $.APP.startTimer('sw');
-        // });    
-
-        $('#cd_start').on('click', function() {
-            $.APP.startTimer('cd');
-        });           
-        
-        $('#cd_stop').on('click', function() {
-            $.APP.stopTimer();
-        });
-        
-        $('#cd_reset').on('click', function() {
-            $.APP.resetTimer();
-        });  
-        
-        $('#cd_pause').on('click', function() {
-            $.APP.pauseTimer();
-        });                
-                
-    })(jQuery);
-        
-});
- </script>
 </head>
 <body>
 	<!-- <div class="container"> -->
 		<div class = "row">
 			<div id="top" class="col-xs-12">
 				<h1 id="header">Countdown</h1>
-                <div id="timerbox">
-                    <span class="time" id="cd_m">60</span><span class="colon">:</span>
-                    <span class="time" id="cd_s">00</span><span class="colon"></span>
-                    <!-- <span class="time" id="cd_ms">00</span> -->
+                <div id="clockbox">
+                    <div class="clock">
+                    
+                    </div>
+                    
                 </div>
                 <div class="form-inline" id="buttonbox">
                     <input class="btn btn-secondary" type="button" value="Start" id="cd_start" />
-                    <input class="btn btn-secondary" type="button" value="Pause" id="cd_pause" />
-                    <input class="btn btn-secondary" type="button" value="Stop"  id="cd_stop" />
+                    <!-- <input class="btn btn-secondary" type="button" value="Pause" id="cd_pause" /> -->
+                    <input class="btn btn-secondary" type="button" value="Pause"  id="cd_stop" />
                     <input class="btn btn-secondary" type="button" value="Reset" id="cd_reset" />
                     <div class="form-group" >
                         <label id="setsecs">Set Seconds:</label>
                         <input class="form-control" type="text" value="3600" id="cd_seconds" />
                     </div>
-                    <input class="btn btn-secondary" type="button" value="MSG1" id="btn_msg1" />
-                    <input class="btn btn-secondary" type="button" value="MSG2" id="btn_msg2" />
                 </div>
-			    <br/>
-			    <br/>
-			    
-			    <br/>
-			    <br/>
-			    <!-- <span id="cd_status">Idle</span> -->
+                <div class="row" id="audioarea">
+                    <div class="col-xs-2">
+                        <audio controls>
+                        <source src="pwba.mp3" type="audio/mpeg" />
+                    </audio>
+                    
+                    </div>
+
+                    <div class="col-xs-2 col-xs-offset-8">
+                        <input class="btn btn-secondary" type="button" value="MSG1" id="btn_msg1" />
+                        <input class="btn btn-secondary" type="button" value="MSG2" id="btn_msg2" />
+                    </div>    
+                    
+                </div>
+                </div>
 			</div>
-		</div>
         <div class="row">
             <div id="bottom" >
-                <textarea class="col-xs-12" rows="4" cols="160" id="hints">HINTS...</textarea>
+                <textarea class="col-xs-12" rows="6" cols="160" id="hints">HINTS...</textarea>
+                <input class="btn btn-secondary col-xs-1 col-xs-offset-10" type="button" value="Update text" id="hintbtn"/>
             </div>
-        </div>
-        <div class="row" id="audioarea">
-            <audio controls>
-            <source src="pwba.mp3" type="audio/mpeg" />
-            <a href="http://www.w3schools.com/html/horse.mp3">horse</a>
-        </audio>
         </div>
 		<span id="countdown" class="timer"></span>
 	<!-- </div> -->
+    <script type="text/javascript">
+        $(document).ready(function(){
+            var socket = io.connect();  
+            var pwmsg1 = document.createElement('audio');
+            pwmsg1.setAttribute('src','pwmsg1.mp3');
+            var pwmsg2 = document.createElement('audio');
+            pwmsg2.setAttribute('src', 'pwmsg2.mp3');
+
+            $('#btn_msg1').click(function(){
+                socket.emit('play_pwmsg1');
+            })
+
+            $('#btn_msg2').click(function(){
+                pwmsg2.play();
+            })
+
+
+            // $('#hints').change(function(){
+            //     alert("CHANGED");
+            // });
+            var clock = $('.clock').FlipClock({countdown:true, autoStart:false, clockFace: 'MinuteCounter'
+                // setCountdown(true);
+            })
+            clock.setTime(3600);
+
+            //SOCKET FUNCTIONS
+            socket.on('update_hints', function(data){
+                console.log(data);
+                $('#hints').html(data);
+            });
+
+            socket.on('startClock', function(data){
+                clock.start();
+            })
+
+            socket.on('stopClock', function(data){
+                clock.stop();
+            })
+
+            socket.on('resetClock', function(data){
+                clock.stop();
+                clock.setTime(3600);
+                $('#cd_seconds').val(3600);
+            })
+
+            socket.on('changeTime', function(data){
+                $('#cd_seconds').val(data)
+                clock.setTime($('#cd_seconds').val());
+            })
+
+            socket.on('playPWmsg1', function(data){
+                pwmsg1.play();
+            })
+
+            $('#hintbtn').on('click',function(){
+                console.log($('#hints').val())
+                socket.emit('new_hint', {hint: $('#hints').val()})
+            })
+
+            $('#cd_start').on('click',function(){
+                socket.emit('start_clock');
+            });
+
+            $('#cd_seconds').on('change', function(){
+                socket.emit('change_time', {time: $('#cd_seconds').val()});
+            })
+
+            $('#cd_stop').on('click', function(){
+                socket.emit('stop_clock');
+            })
+
+            $('#cd_reset').on('click', function(){
+               socket.emit('reset_clock');
+            })
+        })
+    </script>
 
 </body>
 </html>
