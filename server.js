@@ -6,19 +6,19 @@ var app = express();
 
 var hints = "HINTS...";
 var clockOn = false;
+var time = 3600;
 
 app.use(express.static(path.join(__dirname, './client')));
 
 var server = app.listen(process.env.PORT || 8000, function(){
-
 	console.log('Website on: 8000');
-})
+});
 
 var io = require('socket.io').listen(server);
 io.sockets.on('connection', function (socket){
 	console.log("WE ARE USING SOCKETS!");
   	console.log(socket.id);
-
+  	io.emit('checkClock', {time: time, clockon: clockOn, hints: hints});
   	socket.on('new_hint', function(data){
   		console.log("NEW HINT");
 
@@ -42,6 +42,11 @@ io.sockets.on('connection', function (socket){
 
   	socket.on('change_time', function(data){
   		io.emit('changeTime', data.time);
+  	})
+
+  	socket.on('updateTime', function(data){
+  		time = data.time;
+  		console.log(data.time);
   	})
 
   	socket.on('play_pwmsg1', function(data){
