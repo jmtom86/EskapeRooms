@@ -99,7 +99,7 @@
                 </div>
                 <div class="row" id="audioarea">
                     <div class="col-xs-2">
-                        <audio controls>
+                        <audio controls id = "audio">
                         <source src="pwba.mp3" type="audio/mpeg" />
                     </audio>
                     
@@ -147,13 +147,26 @@
             clock.setTime(3600);
 
             //SOCKET FUNCTIONS
+            socket.on('checkClock', function(data){
+                // console.log(data.time);
+                // console.log(data.clockon);
+                clock.setTime(data.time);
+                if(data.clockon == true){
+                    clock.start();
+                }
+                $('#hints').html(data.hints);
+            });
+
             socket.on('update_hints', function(data){
                 console.log(data);
                 $('#hints').html(data);
             });
 
             socket.on('startClock', function(data){
-                clock.start();
+                clock.start(function(){
+                    // console.log(clock.getTime().time);
+                    socket.emit('updateTime', {time: clock.getTime().time})
+                    })
             })
 
             socket.on('stopClock', function(data){
@@ -173,6 +186,10 @@
 
             socket.on('playPWmsg1', function(data){
                 pwmsg1.play();
+            })
+
+            $('#audio').on('click', function(){
+                console.log('clicked');
             })
 
             $('#hintbtn').on('click',function(){
