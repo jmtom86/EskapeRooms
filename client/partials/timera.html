@@ -37,7 +37,7 @@
                     </div>
     
                     <div class="col-xs-2 col-xs-offset-7">
-                        <input id="firstbtn" class="btn btn-secondary" type="button" value="MSG1" id="btn_msg1" />
+                        <input class="btn btn-secondary" type="button" value="MSG1" id="btn_msg1" />
                         <input class="btn btn-secondary" type="button" value="MSG2" id="btn_msg2" />
                     </div>    
                     
@@ -62,14 +62,9 @@
             pwba.setAttribute('src', 'pwba.mp3');
             var notification = document.createElement('audio');
             notification.setAttribute('src', 'notif.mp3');
+            pwmsg1.load();
+            pwmsg2.load();
 
-            $('#btn_msg1').click(function(){
-                socket.emit('play_pwmsg1');
-            })
-
-            $('#btn_msg2').click(function(){
-                socket.emit('play_pwmsg2');
-            })
 
 
             // $('#hints').change(function(){
@@ -127,11 +122,12 @@
             })
 
             socket.on('playPWmsg1', function(data){
+                console.log("PLAY MSG 1");
                 pwmsg1.play();
             })
 
-            socket.on('playPWmsg1', function(data){
-                pwmsg1.play();
+            socket.on('playPWmsg2', function(data){
+                pwmsg2.play();
             })
 
             socket.on('volumeChange', function(data){
@@ -150,6 +146,16 @@
 
             $('#hints').on('keyup', function(){
                 socket.emit('new_hint', {hint: $('#hints').val()})
+            })
+
+
+            $('#btn_msg1').click(function(){
+                console.log("CLICKED 1");
+                socket.emit('play_pwmsg1');
+            })
+
+            $('#btn_msg2').click(function(){
+                socket.emit('play_pwmsg2');
             })
 
             // $('#hintbtn').on('click',function(){
