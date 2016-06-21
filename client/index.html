@@ -3,14 +3,23 @@
 <head>
 	<meta charset="UTF-8">
 	<title>EskapeRooms Timer</title>
+    <link rel="stylesheet" type="text/css" href="style/login.css">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+    <link href='http://fonts.googleapis.com/css?family=Varela+Round' rel='stylesheet' type='text/css'>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.5/angular.min.js"></script>
+      <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.5/angular-route.min.js"></script>
+      <script type='text/javascript' src="angular/app.js"></script>
+      <script type='text/javascript' src="angular/factories/factory.js"></script>
+      <script type='text/javascript' src="angular/controllers/controller.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.13.1/jquery.validate.min.js"></script>
     <script type ="text/javascript" src="/socket.io/socket.io.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="bootstrap-player.css">
     <script src="bootstrap-player.js"></script>
     <link rel="stylesheet" href="flipclock.css">
-    <script type="text/javascript" src="flipclock.js    "></script>
+    <script type="text/javascript" src="flipclock.js"></script>
 	<style type="text/css">
 		@font-face {
 			font-family: digital;
@@ -19,12 +28,27 @@
 
 		#top {
 			background-color: black;
-			height: 350px;
+			height: 430px;
 		}
 
-		#header, .time, .colon {
-			color: red;
+        #ringerbtn {
+            background-color: black;
+        }
+
+        #ringer {
+            margin: 15px 15px 0px 15px;
+            width: 35px;
+        }
+
+		#header{
+            margin: 0px;
+			color: white;
+            text-align: center;
 		}
+
+        #firstbtn {
+            margin-right: 20px;
+        }
 
 		/*.time, .colon {
 			font-size: 700%;
@@ -37,8 +61,17 @@
             background-color: black;
         }
 
+        #setvol {
+            color: white;
+            font-size: 150%;
+        }
+
+        #cd_seconds, #cd_volume {
+            width: 100px;
+        }
+
         #buttonbox {
-            margin-top: 50px;
+            margin-top: 30px;
         }
 
         #buttonbox input {
@@ -73,148 +106,21 @@
         .clock {
             display: inline-block;
             width: auto;
+            zoom: 1.7;
+            -moz-transform: scale(1.7);
         }
 	</style>
 
 </head>
 <body>
 	<!-- <div class="container"> -->
-		<div class = "row">
-			<div id="top" class="col-xs-12">
-				<h1 id="header">Countdown</h1>
-                <div id="clockbox">
-                    <div class="clock">
-                    
-                    </div>
-                    
-                </div>
-                <div class="form-inline" id="buttonbox">
-                    <input class="btn btn-secondary" type="button" value="Start" id="cd_start" />
-                    <!-- <input class="btn btn-secondary" type="button" value="Pause" id="cd_pause" /> -->
-                    <input class="btn btn-secondary" type="button" value="Pause"  id="cd_stop" />
-                    <input class="btn btn-secondary" type="button" value="Reset" id="cd_reset" />
-                    <div class="form-group" >
-                        <label id="setsecs">Set Seconds:</label>
-                        <input class="form-control" type="text" value="3600" id="cd_seconds" />
-                    </div>
-                </div>
-                <div class="row" id="audioarea">
-                    <div class="col-xs-2">
-                        <audio controls id = "audio">
-                        <source src="pwba.mp3" type="audio/mpeg" />
-                    </audio>
-                    
-                    </div>
-
-                    <div class="col-xs-2 col-xs-offset-8">
-                        <input class="btn btn-secondary" type="button" value="MSG1" id="btn_msg1" />
-                        <input class="btn btn-secondary" type="button" value="MSG2" id="btn_msg2" />
-                    </div>    
-                    
-                </div>
-                </div>
-			</div>
-        <div class="row">
-            <div id="bottom" >
-                <textarea class="col-xs-12" rows="6" cols="160" id="hints">HINTS...</textarea>
-                <input class="btn btn-secondary col-xs-1 col-xs-offset-10" type="button" value="Update text" id="hintbtn"/>
-            </div>
+    <div ng-app="myApp">
+        <div ng-view="">
+            <h1>HELLO</h1>
         </div>
-		<span id="countdown" class="timer"></span>
+    </div>
 	<!-- </div> -->
-    <script type="text/javascript">
-        $(document).ready(function(){
-            var socket = io.connect();  
-            var pwmsg1 = document.createElement('audio');
-            pwmsg1.setAttribute('src','pwmsg1.mp3');
-            var pwmsg2 = document.createElement('audio');
-            pwmsg2.setAttribute('src', 'pwmsg2.mp3');
-
-            $('#btn_msg1').click(function(){
-                socket.emit('play_pwmsg1');
-            })
-
-            $('#btn_msg2').click(function(){
-                pwmsg2.play();
-            })
-
-
-            // $('#hints').change(function(){
-            //     alert("CHANGED");
-            // });
-            var clock = $('.clock').FlipClock({countdown:true, autoStart:false, clockFace: 'MinuteCounter'
-                // setCountdown(true);
-            })
-            clock.setTime(3600);
-
-            //SOCKET FUNCTIONS
-            socket.on('checkClock', function(data){
-                // console.log(data.time);
-                // console.log(data.clockon);
-                clock.setTime(data.time);
-                if(data.clockon == true){
-                    clock.start();
-                }
-                $('#hints').html(data.hints);
-            });
-
-            socket.on('update_hints', function(data){
-                console.log(data);
-                $('#hints').html(data);
-            });
-
-            socket.on('startClock', function(data){
-                clock.start(function(){
-                    // console.log(clock.getTime().time);
-                    socket.emit('updateTime', {time: clock.getTime().time})
-                    })
-            })
-
-            socket.on('stopClock', function(data){
-                clock.stop();
-            })
-
-            socket.on('resetClock', function(data){
-                clock.stop();
-                clock.setTime(3600);
-                $('#cd_seconds').val(3600);
-            })
-
-            socket.on('changeTime', function(data){
-                $('#cd_seconds').val(data)
-                clock.setTime($('#cd_seconds').val());
-            })
-
-            socket.on('playPWmsg1', function(data){
-                pwmsg1.play();
-            })
-
-            $('#audio').on('click', function(){
-                console.log('clicked');
-            })
-
-            $('#hintbtn').on('click',function(){
-                console.log($('#hints').val())
-                socket.emit('new_hint', {hint: $('#hints').val()})
-            })
-
-            $('#cd_start').on('click',function(){
-                socket.emit('start_clock');
-            });
-
-            $('#cd_seconds').on('change', function(){
-                socket.emit('change_time', {time: $('#cd_seconds').val()});
-            })
-
-            $('#cd_stop').on('click', function(){
-                socket.emit('stop_clock');
-            })
-
-            $('#cd_reset').on('click', function(){
-               socket.emit('reset_clock');
-            })
-        })
-    </script>
+    
 
 </body>
 </html>
