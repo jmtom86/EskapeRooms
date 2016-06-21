@@ -3,13 +3,22 @@ var express = require('express');
 var path = require('path');
 
 var app = express();
+var bodyParser = require('body-parser');
+//this is for regular post requests
+app.use(bodyParser.urlencoded());
+//this is for post requests that want json back
+app.use(bodyParser.json());
 
 var hints = "HINTS...";
 var clockOn = false;
 var time = 3600;
+var volume = 1;
 
 app.use(express.static(path.join(__dirname, './client')));
+require('./config/mongoose.js');
 
+// this line requires and runs the code from our routes.js file and passes it app so that we can attach our routing rules to our express application!
+require('./config/routes.js')(app);
 var server = app.listen(process.env.PORT || 8000, function(){
 	console.log('Website on: 8000');
 });
@@ -37,7 +46,18 @@ io.sockets.on('connection', function (socket){
   	})
 
   	socket.on('reset_clock', function(data){
+  		hints = "HINTS...";
   		io.emit('resetClock');
+
+  	})
+
+  	socket.on('change_volume', function(data){
+  		volume = data.volume/100;
+  		io.emit('volumeChange', volume);
+  	})
+
+  	socket.on('notif_sound', function(data){
+  		io.emit('playNotif');
   	})
 
   	socket.on('change_time', function(data){
@@ -51,5 +71,9 @@ io.sockets.on('connection', function (socket){
 
   	socket.on('play_pwmsg1', function(data){
   		io.emit('playPWmsg1');
+  	})
+
+  	socket.on('play_pwmsg2', function(data){
+  		io.emit('playPWmsg2')
   	})
 })
