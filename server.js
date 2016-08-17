@@ -10,6 +10,13 @@ app.use(bodyParser.urlencoded());
 app.use(bodyParser.json());
 
 var hints = "HINTS...";
+<<<<<<< HEAD
+var hintsODS = "HINTS...";
+var clockOnODS = false;
+var timeODS = 3600;
+var volumeODS = 1;
+=======
+>>>>>>> d70fa5b8e464b935c910ceed22afc2b487327b5f
 var clockOn = false;
 var time = 3600;
 var volume = 1;
@@ -28,6 +35,10 @@ io.sockets.on('connection', function (socket){
 	console.log("WE ARE USING SOCKETS!");
   	console.log(socket.id);
   	io.emit('checkClock', {time: time, clockon: clockOn, hints: hints});
+<<<<<<< HEAD
+    io.emit('checkClockODS', {time: timeODS, clockon: clockOnODS, hints: hintsODS})
+=======
+>>>>>>> d70fa5b8e464b935c910ceed22afc2b487327b5f
   	socket.on('new_hint', function(data){
   		console.log("NEW HINT");
 
@@ -76,4 +87,57 @@ io.sockets.on('connection', function (socket){
   	socket.on('play_pwmsg2', function(data){
   		io.emit('playPWmsg2')
   	})
+<<<<<<< HEAD
+
+    //Operation Dream State socket functions
+    socket.on('new_hint_ods', function(data){
+      console.log("NEW HINT");
+
+      hintsODS = data.hint;
+      io.emit('update_hints_ods', hints);
+    })
+
+    socket.on('start_clock_ods', function(data){
+      clockOnODS = true;
+      io.emit('startClock_ods');
+    })
+
+    socket.on('stop_clock_ods', function(data){
+      clockOnODS = false;
+      io.emit('stopClock_ods');
+    })
+
+    socket.on('reset_clock_ods', function(data){
+      hintsODS = "HINTS...";
+      io.emit('resetClock_ods');
+
+    })
+
+    socket.on('change_volume_ods', function(data){
+      volumeODS = data.volume/100;
+      io.emit('volumeChange_ods', volume);
+    })
+
+    socket.on('notif_sound_ods', function(data){
+      io.emit('playNotif_ods');
+    })
+
+    socket.on('change_time_ods', function(data){
+      io.emit('changeTime_ods', data.time);
+    })
+
+    socket.on('updateTime_ods', function(data){
+      timeODS = data.time;
+      // console.log(data.time);
+    })
+
+    socket.on('play_pwmsg1_ods', function(data){
+      io.emit('playPWmsg1_ods');
+    })
+
+    socket.on('play_pwmsg2_ods', function(data){
+      io.emit('playPWmsg2_ods')
+    })
+=======
+>>>>>>> d70fa5b8e464b935c910ceed22afc2b487327b5f
 })

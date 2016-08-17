@@ -11,6 +11,12 @@
         .when('/timera',{
             templateUrl: 'partials/timera.html'
         })
+        .when('/timerods',{
+            templateUrl: 'partials/timerods.html'
+        })
+        .when('/timeraods',{
+            templateUrl: 'partials/timeraods.html'
+        })
         .otherwise({
           redirectTo: '/'
         });

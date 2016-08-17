@@ -505,6 +505,8 @@ var FlipClock;
 			}
 			else {
 				this.decrement();
+				//console.log(this.factory.time.getTimeSeconds());
+
 			}
 		},
 
@@ -524,7 +526,9 @@ var FlipClock;
 			if(this.factory.time.getTimeSeconds() == 0) {
 				console.log(this.factory.time.getTimeSeconds());
 	        	this.factory.stop()
-	        	this.alarmEnd.play();
+	        	// this.alarmEnd.play();
+	        	console.log("PLAY ALARM");
+	        	// this.factory.reset();
 			}
 			else {
 				this.factory.time.subSecond();

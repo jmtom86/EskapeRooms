@@ -1,20 +1,16 @@
 <div ng-controller="timerController">
 	<div id="ringerbtn" class="row">
-
         <div class="col-xs-2">
             <a class="roomlinks" href="#/timera">PW</a>
             <a class="roomlinks" href="#/timerods">ODS</a>
-            <!-- <input class="btn btn-secondary" value="PW"type="button">
-            <input class="btn btn-secondary" value="ODS"type="button"> -->
         </div>
         <div  class="col-xs-1 col-xs-offset-9">
-
             <input id="ringer" type="button" class="btn btn-secondary"/>
         </div>
     </div>
 		<div class = "row">
 			<div id="top" class="col-xs-12">
-				<h1 id="header">Professor White</h1>
+				<h1 id="header">Operation Dream State</h1>
                 <div id="clockbox">
                     <div class="clock">
                     
@@ -60,32 +56,31 @@
 </div>
 <script type="text/javascript">
         $(document).ready(function(){
-
-
-            //INITIALIZE AUDIO ELEMENTS
-
+            // console.log($scope.user);
             var socket = io.connect();  
-            var pwmsg1 = document.createElement('audio');
-            pwmsg1.setAttribute('src','pwmsg1.mp3');
-            var pwmsg2 = document.createElement('audio');
-            pwmsg2.setAttribute('src', 'pwmsg2.mp3');
-            var pwba = document.createElement('audio');
-            pwba.setAttribute('src', 'pwba.mp3');
-            var notification = document.createElement('audio');
-            notification.setAttribute('src', 'notif.mp3');
-            var alarmEnd = document.createElement('audio');
-            alarmEnd.setAttribute('src', 'buzzer.mp3');
-            pwmsg1.load();
-            pwmsg2.load();
+            // var pwmsg1 = document.createElement('audio');
+            // pwmsg1.setAttribute('src','pwmsg1.mp3');
+            // var pwmsg2 = document.createElement('audio');
+            // pwmsg2.setAttribute('src', 'pwmsg2.mp3');
+            // var pwba = document.createElement('audio');
+            // pwba.setAttribute('src', 'pwba.mp3');
+            // var notification = document.createElement('audio');
+            // notification.setAttribute('src', 'notif.mp3');
 
+            
+
+            // $('#hints').change(function(){
+            //     alert("CHANGED");
+            // });
             var clock = $('.clock').FlipClock({countdown:true, autoStart:false, clockFace: 'MinuteCounter'
                 // setCountdown(true);
             })
             clock.setTime(3600);
 
             //SOCKET FUNCTIONS
-            socket.on('checkClock', function(data){
-
+            socket.on('checkClock_ods', function(data){
+                // console.log(data.time);
+                // console.log(data.clockon);
                 clock.setTime(data.time);
                 if(data.clockon == true){
                     clock.start();
@@ -93,87 +88,79 @@
                 $('#hints').html(data.hints);
             });
 
-            socket.on('update_hints', function(data){
+            socket.on('update_hints_ods', function(data){
                 console.log(data);
                 $('#hints').html(data);
             });
 
-            socket.on('startClock', function(data){
-                if($('#cd_seconds').val() != 60){
-                    pwba.currentTime = $('#cd_seconds').val()*60;
-                }
-                pwba.play();
+            socket.on('startClock_ods', function(data){
+                // if($('#cd_seconds').val() != 60){
+                //     pwba.currentTime = $('#cd_seconds').val()*60;
+                // }
+                // pwba.play();
                 clock.start(function(){
-                    socket.emit('updateTime', {time: clock.getTime().time})
-                    if(clock.getTime().time == 0) {
-                        alarmEnd.play();
-                    }
-
+                    // console.log(clock.getTime().time);
+                    socket.emit('updateTime_ods', {time: clock.getTime().time})
                     })
             })
 
-            socket.on('stopClock', function(data){
-                pwba.pause();
+            socket.on('stopClock_ods', function(data){
+                // pwba.pause();
                 clock.stop();
             })
 
-            socket.on('resetClock', function(data){
-                pwba.pause();
-                pwba.currentTime = 0;
+            socket.on('resetClock_ods', function(data){
+                // pwba.pause();
+                // pwba.currentTime = 0;
                 clock.stop();
                 clock.setTime(3600);
                 $('#cd_seconds').val(60);
                 $('#hints').html("HINTS...");
             })
 
-            socket.on('changeTime', function(data){
+            socket.on('changeTime_ods', function(data){
                 $('#cd_seconds').val(data)
                 clock.setTime($('#cd_seconds').val()*60);
             })
 
-            socket.on('playPWmsg1', function(data){
-                console.log("PLAY MSG 1");
-                pwmsg1.play();
-            })
+            // socket.on('playPWmsg1', function(data){
+            //     pwmsg1.play();
+            // })
 
-            socket.on('playPWmsg2', function(data){
-                console.log("PLAY MSG 2");
-                pwmsg2.play();
-            })
-
-            socket.on('volumeChange', function(data){
-                pwba.volume = data;
+            socket.on('volumeChange_ods', function(data){
+                // pwba.volume = data;
                 $('#cd_volume').val(data * 100);
                 console.log(pwba.volume);
             })
 
-            socket.on('playNotif', function(data){
-                notification.play();
-            })
-
-            //jQuery FUNCTIONS
+            // socket.on('playNotif', function(data){
+            //     notification.play();
+            // })
 
             $('#audio').on('click', function(){
                 console.log('clicked');
             })
 
             $('#hints').on('keyup', function(){
-                socket.emit('new_hint', {hint: $('#hints').val()})
+                socket.emit('new_hint_ods', {hint: $('#hints').val()})
             })
 
-
             $('#btn_msg1').click(function(){
-                console.log("CLICKED 1");
-                socket.emit('play_pwmsg1');
+                socket.emit('play_pwmsg1_ods');
             })
 
             $('#btn_msg2').click(function(){
-                socket.emit('play_pwmsg2');
+                socket.emit('play_pwmsg2_ods');
             })
 
 
+            // $('#hintbtn').on('click',function(){
+            //     console.log($('#hints').val())
+            //     socket.emit('new_hint', {hint: $('#hints').val()})
+            // })
+
             $('#cd_start').on('click',function(){
-                socket.emit('start_clock');
+                socket.emit('start_clock_ods');
 
             });
 
@@ -182,23 +169,23 @@
                 if($('#cd_volume').val() < 100){
                     vol = $('#cd_volume').val();
                 }
-                socket.emit('change_volume', {volume: vol})
+                socket.emit('change_volume_ods', {volume: vol})
             })
 
             $('#cd_seconds').on('change', function(){
-                socket.emit('change_time', {time: $('#cd_seconds').val()});
+                socket.emit('change_time_ods', {time: $('#cd_seconds').val()});
             })
 
             $('#ringer').on('click', function(){
-                socket.emit('notif_sound');
+                socket.emit('notif_sound_ods');
             })
 
             $('#cd_stop').on('click', function(){
-                socket.emit('stop_clock');
+                socket.emit('stop_clock_ods');
             })
 
             $('#cd_reset').on('click', function(){
-               socket.emit('reset_clock');
+               socket.emit('reset_clock_ods');
             })
         })
     </script>
