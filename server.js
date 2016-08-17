@@ -10,16 +10,10 @@ app.use(bodyParser.urlencoded());
 app.use(bodyParser.json());
 
 var hints = "HINTS...";
-<<<<<<< HEAD
-<<<<<<< HEAD
 var hintsODS = "HINTS...";
 var clockOnODS = false;
 var timeODS = 3600;
 var volumeODS = 1;
-=======
->>>>>>> d70fa5b8e464b935c910ceed22afc2b487327b5f
-=======
->>>>>>> d70fa5b8e464b935c910ceed22afc2b487327b5f
 var clockOn = false;
 var time = 3600;
 var volume = 1;

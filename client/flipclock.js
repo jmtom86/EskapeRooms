@@ -505,11 +505,6 @@ var FlipClock;
 			}
 			else {
 				this.decrement();
-<<<<<<< HEAD
-				//console.log(this.factory.time.getTimeSeconds());
-
-=======
->>>>>>> d70fa5b8e464b935c910ceed22afc2b487327b5f
 			}
 		},
 
@@ -529,13 +524,10 @@ var FlipClock;
 			if(this.factory.time.getTimeSeconds() == 0) {
 				console.log(this.factory.time.getTimeSeconds());
 	        	this.factory.stop()
-<<<<<<< HEAD
 	        	// this.alarmEnd.play();
 	        	console.log("PLAY ALARM");
 	        	// this.factory.reset();
-=======
-	        	this.alarmEnd.play();
->>>>>>> d70fa5b8e464b935c910ceed22afc2b487327b5f
+
 			}
 			else {
 				this.factory.time.subSecond();
