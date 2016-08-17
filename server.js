@@ -11,10 +11,13 @@ app.use(bodyParser.json());
 
 var hints = "HINTS...";
 <<<<<<< HEAD
+<<<<<<< HEAD
 var hintsODS = "HINTS...";
 var clockOnODS = false;
 var timeODS = 3600;
 var volumeODS = 1;
+=======
+>>>>>>> d70fa5b8e464b935c910ceed22afc2b487327b5f
 =======
 >>>>>>> d70fa5b8e464b935c910ceed22afc2b487327b5f
 var clockOn = false;
@@ -35,10 +38,9 @@ io.sockets.on('connection', function (socket){
 	console.log("WE ARE USING SOCKETS!");
   	console.log(socket.id);
   	io.emit('checkClock', {time: time, clockon: clockOn, hints: hints});
-<<<<<<< HEAD
+
     io.emit('checkClockODS', {time: timeODS, clockon: clockOnODS, hints: hintsODS})
-=======
->>>>>>> d70fa5b8e464b935c910ceed22afc2b487327b5f
+
   	socket.on('new_hint', function(data){
   		console.log("NEW HINT");
 
@@ -87,7 +89,6 @@ io.sockets.on('connection', function (socket){
   	socket.on('play_pwmsg2', function(data){
   		io.emit('playPWmsg2')
   	})
-<<<<<<< HEAD
 
     //Operation Dream State socket functions
     socket.on('new_hint_ods', function(data){
@@ -138,6 +139,4 @@ io.sockets.on('connection', function (socket){
     socket.on('play_pwmsg2_ods', function(data){
       io.emit('playPWmsg2_ods')
     })
-=======
->>>>>>> d70fa5b8e464b935c910ceed22afc2b487327b5f
 })

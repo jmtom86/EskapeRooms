@@ -57,6 +57,7 @@
 <script type="text/javascript">
         $(document).ready(function(){
 
+
             var socket = io.connect();  
             var clock = $('.clock').FlipClock({countdown:true, autoStart:false, clockFace: 'MinuteCounter'
 
@@ -80,6 +81,7 @@
 
             socket.on('startClock', function(data){
 
+
                 clock.start(function(){ 
                     socket.emit('updateTime', {time: clock.getTime().time})
                 })
@@ -91,7 +93,6 @@
             })
 
             socket.on('resetClock', function(data){
-
                 clock.stop();
                 clock.setTime(3600);
                 $('#cd_seconds').val(60);
@@ -104,12 +105,11 @@
             })
 
 
-            socket.on('volumeChange', function(data){
 
+            socket.on('volumeChange', function(data){
                 $('#cd_volume').val(data * 100);
                 console.log(pwba.volume);
             })
-
 
             //jQuery FUNCTIONS
 

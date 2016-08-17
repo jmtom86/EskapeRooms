@@ -1,6 +1,5 @@
 <div ng-controller="timerController">
 	<div id="ringerbtn" class="row">
-
         <div class="col-xs-2">
             <a class="roomlinks" href="#/timera">PW</a>
             <a class="roomlinks" href="#/timerods">ODS</a>
@@ -61,7 +60,6 @@
 <script type="text/javascript">
         $(document).ready(function(){
 
-
             //INITIALIZE AUDIO ELEMENTS
 
             var socket = io.connect();  
@@ -73,6 +71,7 @@
             pwba.setAttribute('src', 'pwba.mp3');
             var notification = document.createElement('audio');
             notification.setAttribute('src', 'notif.mp3');
+
             var alarmEnd = document.createElement('audio');
             alarmEnd.setAttribute('src', 'buzzer.mp3');
             pwmsg1.load();

@@ -1,7 +1,7 @@
 myApp.factory("mainFactory", function($http){
 
 	var factory = {};
-<<<<<<< HEAD
+
   var currentUser;
 	factory.login = function(data, callback){
 		// console.log("DATA", data);

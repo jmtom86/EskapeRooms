@@ -19,7 +19,6 @@ myApp.controller("timerController", function($scope, $location, mainFactory){
 	$scope.currentUser;
 	mainFactory.getCurrentUserInfo(function(data){
 		$scope.currentUser = data;
-
 	})
 
 })
