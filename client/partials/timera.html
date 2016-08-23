@@ -67,6 +67,10 @@
             pwmsg1.setAttribute('src','pwmsg1.mp3');
             var pwmsg2 = document.createElement('audio');
             pwmsg2.setAttribute('src', 'pwmsg2.mp3');
+            pwmsg2.onended = function(){
+                console.log("ENDED");
+                pwba.play();
+            }
             var pwba = document.createElement('audio');
             pwba.setAttribute('src', 'pwba.mp3');
             var notification = document.createElement('audio');
@@ -140,7 +144,9 @@
 
             socket.on('playPWmsg2', function(data){
                 console.log("PLAY MSG 2");
+                pwba.pause();
                 pwmsg2.play();
+
             })
 
             socket.on('volumeChange', function(data){

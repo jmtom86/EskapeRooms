@@ -62,6 +62,10 @@
             pwmsg1.setAttribute('src','as1.m4a');
             var pwmsg2 = document.createElement('audio');
             pwmsg2.setAttribute('src', 'as2.m4a');
+            pwmsg2.onended = function(){
+                console.log("ENDED");
+                odsba.play();
+            }
             var odsba = document.createElement('audio');
             odsba.setAttribute('src', 'ods.mp3');
             var notification = document.createElement('audio');
@@ -142,6 +146,7 @@
 
             socket.on('playPWmsg2_ods', function(data){
                 console.log("PLAY MSG 2");
+                odsba.pause();
                 pwmsg2.play();
             })
 
