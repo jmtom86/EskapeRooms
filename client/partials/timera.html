@@ -87,6 +87,8 @@
 
                 clock.setTime(data.time);
                 if(data.clockon == true){
+                    pwba.currentTime = data.time;
+                    pwba.play();
                     clock.start();
                 }
                 $('#hints').html(data.hints);

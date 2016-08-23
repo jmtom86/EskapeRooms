@@ -88,6 +88,8 @@
                 // console.log(data.clockon);
                 clock.setTime(data.time);
                 if(data.clockon == true){
+                    odsba.currentTime = data.time;
+                    odsba.play();
                     clock.start();
                 }
                 $('#hints').html(data.hints);
