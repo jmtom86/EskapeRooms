@@ -107,6 +107,7 @@
                 clock.start(function(){
                     socket.emit('updateTime', {time: clock.getTime().time})
                     if(clock.getTime().time == 0) {
+                        pwba.pause();
                         alarmEnd.play();
                     }
 

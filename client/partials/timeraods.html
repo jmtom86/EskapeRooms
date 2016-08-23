@@ -110,6 +110,7 @@
                     // console.log(clock.getTime().time);
                     socket.emit('updateTime_ods', {time: clock.getTime().time});
                     if(clock.getTime().time == 0) {
+                        odsba.pause();
                         alarmEnd.play();
                     }
                     })
