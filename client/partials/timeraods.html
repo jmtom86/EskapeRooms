@@ -62,12 +62,13 @@
             pwmsg1.setAttribute('src','as1.m4a');
             var pwmsg2 = document.createElement('audio');
             pwmsg2.setAttribute('src', 'as2.m4a');
-            var pwba = document.createElement('audio');
-            pwba.setAttribute('src', 'ods.mp3');
+            var odsba = document.createElement('audio');
+            odsba.setAttribute('src', 'ods.mp3');
             var notification = document.createElement('audio');
             notification.setAttribute('src', 'notif.mp3');
             var alarmEnd = document.createElement('audio');
             alarmEnd.setAttribute('src', 'buzzer.mp3');
+            odsba.load();
             pwmsg1.load();
             pwmsg2.load();
 
@@ -99,9 +100,10 @@
 
             socket.on('startClock_ods', function(data){
                 if($('#cd_seconds').val() != 60){
-                    pwba.currentTime = $('#cd_seconds').val()*60;
+                    odsba.currentTime = $('#cd_seconds').val()*60;
                 }
-                pwba.play();
+                console.log("PLAYING");
+                odsba.play();
                 clock.start(function(){
                     // console.log(clock.getTime().time);
                     socket.emit('updateTime_ods', {time: clock.getTime().time});
@@ -112,13 +114,13 @@
             })
 
             socket.on('stopClock_ods', function(data){
-                pwba.pause();
+                odsba.pause();
                 clock.stop();
             })
 
             socket.on('resetClock_ods', function(data){
-                pwba.pause();
-                pwba.currentTime = 0;
+                odsba.pause();
+                odsba.currentTime = 0;
                 clock.stop();
                 clock.setTime(3600);
                 $('#cd_seconds').val(60);
@@ -141,7 +143,7 @@
             })
 
             socket.on('volumeChange_ods', function(data){
-                pwba.volume = data;
+                odsba.volume = data;
                 $('#cd_volume').val(data * 100);
                 console.log(pwba.volume);
             })
