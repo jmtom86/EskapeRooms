@@ -58,6 +58,7 @@
         $(document).ready(function(){
             // console.log($scope.user);
             var socket = io.connect();  
+            socket.emit("check_clock_time_ods");
             // var pwmsg1 = document.createElement('audio');
             // pwmsg1.setAttribute('src','pwmsg1.mp3');
             // var pwmsg2 = document.createElement('audio');
@@ -79,6 +80,9 @@
 
             //SOCKET FUNCTIONS
             socket.on('checkClock_ods', function(data){
+                console.log("ODS DATA ON LOAD");
+                console.log("TIME - ", data.time);
+                console.log("CLOCK ON - ", data.clockon);
                 // console.log(data.time);
                 // console.log(data.clockon);
                 clock.setTime(data.time);

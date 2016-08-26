@@ -63,6 +63,7 @@
             //INITIALIZE AUDIO ELEMENTS
 
             var socket = io.connect();  
+            socket.emit("check_clock_time");
             var pwmsg1 = document.createElement('audio');
             pwmsg1.setAttribute('src','pwmsg1.mp3');
             var pwmsg2 = document.createElement('audio');
@@ -88,7 +89,9 @@
 
             //SOCKET FUNCTIONS
             socket.on('checkClock', function(data){
-
+                console.log("PW Admin DATA ON LOAD");
+                console.log("TIME - ", data.time);
+                console.log("CLOCK ON - ", data.clockon);
                 clock.setTime(data.time);
                 if(data.clockon == true){
                     pwba.currentTime = data.time;
@@ -105,7 +108,8 @@
 
             socket.on('startClock', function(data){
                 if($('#cd_seconds').val() != 60){
-                    pwba.currentTime = $('#cd_seconds').val()*60;
+
+                    pwba.currentTime = 3600 - $('#cd_seconds').val()*60;
                 }
                 pwba.play();
                 clock.start(function(){
@@ -119,6 +123,8 @@
             })
 
             socket.on('stopClock', function(data){
+                console.log("CURRENT TIME");
+                console.log(pwba.currentTime);
                 pwba.pause();
                 clock.stop();
             })

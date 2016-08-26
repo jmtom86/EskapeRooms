@@ -59,6 +59,7 @@
 
 
             var socket = io.connect();  
+            socket.emit("check_clock_time");
             var clock = $('.clock').FlipClock({countdown:true, autoStart:false, clockFace: 'MinuteCounter'
 
             })
@@ -66,7 +67,9 @@
 
             //SOCKET FUNCTIONS
             socket.on('checkClock', function(data){
-
+                console.log("PW DATA ON LOAD");
+                console.log("TIME - ", data.time);
+                console.log("CLOCK ON - ", data.clockon);
                 clock.setTime(data.time);
                 if(data.clockon == true){
                     clock.start();

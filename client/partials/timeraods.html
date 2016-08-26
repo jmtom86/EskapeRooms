@@ -57,7 +57,8 @@
 <script type="text/javascript">
         $(document).ready(function(){
             // console.log($scope.user);
-            var socket = io.connect();  
+            var socket = io.connect(); 
+            socket.emit("check_clock_time_ods"); 
             var pwmsg1 = document.createElement('audio');
             pwmsg1.setAttribute('src','as1.m4a');
             var pwmsg2 = document.createElement('audio');
@@ -88,6 +89,9 @@
 
             //SOCKET FUNCTIONS
             socket.on('checkClockODS', function(data){
+                console.log("ODS Admin DATA ON LOAD");
+                console.log("TIME - ", data.time);
+                console.log("CLOCK ON - ", data.clockon);
                 // console.log(data.time);
                 // console.log(data.clockon);
                 clock.setTime(data.time);
@@ -106,7 +110,7 @@
 
             socket.on('startClock_ods', function(data){
                 if($('#cd_seconds').val() != 60){
-                    odsba.currentTime = $('#cd_seconds').val()*60;
+                    odsba.currentTime = 3600 - $('#cd_seconds').val()*60;
                 }
                 console.log("PLAYING");
                 odsba.play();
@@ -153,7 +157,6 @@
             socket.on('volumeChange_ods', function(data){
                 odsba.volume = data;
                 $('#cd_volume').val(data * 100);
-                console.log(pwba.volume);
             })
 
             socket.on('playNotif_ods', function(data){

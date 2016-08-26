@@ -35,6 +35,10 @@ io.sockets.on('connection', function (socket){
 
     io.emit('checkClockODS', {time: timeODS, clockon: clockOnODS, hints: hintsODS})
 
+    socket.on("check_clock_time", function(data){
+      io.emit("checkClock", {time: time, clockon: clockOn, hints: hints});
+    })
+
   	socket.on('new_hint', function(data){
   		console.log("NEW HINT");
 
@@ -85,6 +89,11 @@ io.sockets.on('connection', function (socket){
   	})
 
     //Operation Dream State socket functions
+
+    socket.on("check_clock_time_ods", function(data){
+      io.emit("checkClock", {time: timeODS, clockon: clockOnODS, hints: hintsODS});
+    })
+
     socket.on('new_hint_ods', function(data){
       console.log("NEW HINT");
 
@@ -110,7 +119,7 @@ io.sockets.on('connection', function (socket){
 
     socket.on('change_volume_ods', function(data){
       volumeODS = data.volume/100;
-      io.emit('volumeChange_ods', volume);
+      io.emit('volumeChange_ods', volumeODS);
     })
 
     socket.on('notif_sound_ods', function(data){
