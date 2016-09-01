@@ -4,6 +4,7 @@ var path = require('path');
 
 var app = express();
 var bodyParser = require('body-parser');
+// var flipclock = require('angular-flipclock');
 //this is for regular post requests
 app.use(bodyParser.urlencoded());
 //this is for post requests that want json back
@@ -47,23 +48,29 @@ io.sockets.on('connection', function (socket){
   	})
 
   	socket.on('start_clock', function(data){
+      console.log("SERVER CLOCK START")
+      time = data.time;
   		clockOn = true;
   		io.emit('startClock');
   	})
 
   	socket.on('stop_clock', function(data){
+      time = data.time;
   		clockOn = false;
   		io.emit('stopClock');
   	})
 
   	socket.on('reset_clock', function(data){
   		hints = "HINTS...";
+      time = 3600;
   		io.emit('resetClock');
 
   	})
 
   	socket.on('change_volume', function(data){
+      console.log("PW VOL CHANGE");
   		volume = data.volume/100;
+      console.log(volume);
   		io.emit('volumeChange', volume);
   	})
 
@@ -81,6 +88,7 @@ io.sockets.on('connection', function (socket){
   	})
 
   	socket.on('play_pwmsg1', function(data){
+      console.log("PLAYING MSG1")
   		io.emit('playPWmsg1');
   	})
 
@@ -91,7 +99,7 @@ io.sockets.on('connection', function (socket){
     //Operation Dream State socket functions
 
     socket.on("check_clock_time_ods", function(data){
-      io.emit("checkClock", {time: timeODS, clockon: clockOnODS, hints: hintsODS});
+      io.emit("checkClockODS", {time: timeODS, clockon: clockOnODS, hints: hintsODS});
     })
 
     socket.on('new_hint_ods', function(data){
@@ -107,11 +115,14 @@ io.sockets.on('connection', function (socket){
     })
 
     socket.on('stop_clock_ods', function(data){
+      timeODS = data.time;
       clockOnODS = false;
       io.emit('stopClock_ods');
     })
 
     socket.on('reset_clock_ods', function(data){
+      timeODS = 3600;
+      clockonODS = false
       hintsODS = "HINTS...";
       io.emit('resetClock_ods');
 
@@ -135,11 +146,11 @@ io.sockets.on('connection', function (socket){
       // console.log(data.time);
     })
 
-    socket.on('play_pwmsg1_ods', function(data){
-      io.emit('playPWmsg1_ods');
+    socket.on('play_odsmsg1', function(data){
+      io.emit('playODSmsg1');
     })
 
-    socket.on('play_pwmsg2_ods', function(data){
-      io.emit('playPWmsg2_ods')
+    socket.on('play_odsmsg2', function(data){
+      io.emit('playODSmsg2')
     })
 })

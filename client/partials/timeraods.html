@@ -1,30 +1,45 @@
-<div ng-controller="timerController">
+<div ng-controller="odsatimerController">
 	<div id="ringerbtn" class="row">
         <div class="col-xs-2">
             <a class="roomlinks" href="#/timer">PW</a>
             <a class="roomlinks" href="#/timeraods">ODS</a>
         </div>
         <div  class="col-xs-1 col-xs-offset-9">
-            <input id="ringer" type="button" class="btn btn-secondary"/>
+            <audio id="aodsmsg1">
+            <source  src="as1.m4a" type="audio/mpeg">
+        </audio>
+        <audio id="aodsmsg2">
+            <source  src="as2.m4a" type="audio/mpeg">
+        </audio>
+        <audio id="aodsba">
+            <source  src="ods.mp3" type="audio/mpeg">
+        </audio>
+        <audio id="aodsnotif">
+            <source  src="notif.mp3" type="audio/mpeg">
+        </audio>
+        <audio id="aodsalarm">
+            <source  src="buzzer.mp3" type="audio/mpeg">
+        </audio>
+            <input timer-directive id="ringer" attr="notif_sound_ods" type="button" class="btn btn-secondary"/>
         </div>
     </div>
 		<div class = "row">
 			<div id="top" class="col-xs-12">
 				<h1 id="header">Operation Dream State</h1>
                 <div id="clockbox">
-                    <div class="clock">
+                    <div id="apwclock" flip-clock>
                     
                     </div>
                     
                 </div>
                 <div class="form-inline" id="buttonbox">
-                    <input class="btn btn-secondary" type="button" value="Start" id="cd_start" />
+                    <input class="btn btn-secondary" type="button" value="Start" id="cd_start" ng-click="startClock()" />
                     <!-- <input class="btn btn-secondary" type="button" value="Pause" id="cd_pause" /> -->
-                    <input class="btn btn-secondary" type="button" value="Pause"  id="cd_stop" />
-                    <input class="btn btn-secondary" type="button" value="Reset" id="cd_reset" />
+                    <input class="btn btn-secondary" type="button" value="Pause"  id="cd_stop" ng-click="stopClock()" />
+                    <input class="btn btn-secondary" type="button" value="Reset" id="cd_reset" ng-click="resetClock()"/>
                     <div class="form-group" >
                         <label id="setsecs">Set Minutes:</label>
-                        <input class="form-control" type="text" value="60" id="cd_seconds" />
+                        <input class="form-control" type="text" value="60" id="cd_seconds" ng-model="min" ng-change="changeMin()"/>
                     </div>
                 </div>
                 <div class="row" id="audioarea">
@@ -32,7 +47,7 @@
                         <div class="form-inline">
                             <div class="form-group">
                                 <label id="setvol">Volume:</label>
-                                <input class="form-control" type="text" value="100" id="cd_volume">
+                                <input class="form-control" ng-model="volume" ng-change="changeVol()" type="text" value="100" id="cd_volume">
                             </div>
                             
                         </div>
@@ -41,8 +56,8 @@
                     </div>
     
                     <div class="col-xs-2 col-xs-offset-7">
-                        <input class="btn btn-secondary" type="button" value="MSG1" id="btn_msg1" />
-                        <input class="btn btn-secondary" type="button" value="MSG2" id="btn_msg2" />
+                        <input timer-directive class="btn btn-secondary" type="button" attr="play_odsmsg1" value="MSG1" id="btn_msg1" />
+                        <input timer-directive attr="play_odsmsg2" class="btn btn-secondary" type="button" value="MSG2" attr="play_odsmsg2" id="btn_msg2" />
                     </div>    
                     
                 </div>
@@ -50,169 +65,7 @@
 			</div>
         <div class="row">
             <div id="bottom" >
-                <textarea class="col-xs-12" rows="6" cols="160" id="hints">HINTS...</textarea>
+                <textarea class="col-xs-12" ng-model="hints" ng-change="updateHints()" rows="6" id="hints"></textarea>
             </div>
         </div>
 </div>
-<script type="text/javascript">
-        $(document).ready(function(){
-            // console.log($scope.user);
-            var socket = io.connect(); 
-            socket.emit("check_clock_time_ods"); 
-            var pwmsg1 = document.createElement('audio');
-            pwmsg1.setAttribute('src','as1.m4a');
-            var pwmsg2 = document.createElement('audio');
-            pwmsg2.setAttribute('src', 'as2.m4a');
-            pwmsg2.onended = function(){
-                console.log("ENDED");
-                odsba.play();
-            }
-            var odsba = document.createElement('audio');
-            odsba.setAttribute('src', 'ods.mp3');
-            var notification = document.createElement('audio');
-            notification.setAttribute('src', 'notif.mp3');
-            var alarmEnd = document.createElement('audio');
-            alarmEnd.setAttribute('src', 'buzzer.mp3');
-            odsba.load();
-            pwmsg1.load();
-            pwmsg2.load();
-
-
-
-            // $('#hints').change(function(){
-            //     alert("CHANGED");
-            // });
-            var clock = $('.clock').FlipClock({countdown:true, autoStart:false, clockFace: 'MinuteCounter'
-                // setCountdown(true);
-            })
-            clock.setTime(3600);
-
-            //SOCKET FUNCTIONS
-            socket.on('checkClockODS', function(data){
-                console.log("ODS Admin DATA ON LOAD");
-                console.log("TIME - ", data.time);
-                console.log("CLOCK ON - ", data.clockon);
-                // console.log(data.time);
-                // console.log(data.clockon);
-                clock.setTime(data.time);
-                if(data.clockon == true){
-                    odsba.currentTime = data.time;
-                    odsba.play();
-                    clock.start();
-                }
-                $('#hints').html(data.hints);
-            });
-
-            socket.on('update_hints_ods', function(data){
-                console.log(data);
-                $('#hints').html(data);
-            });
-
-            socket.on('startClock_ods', function(data){
-                if($('#cd_seconds').val() != 60){
-                    odsba.currentTime = 3600 - $('#cd_seconds').val()*60;
-                }
-                console.log("PLAYING");
-                odsba.play();
-                clock.start(function(){
-                    // console.log(clock.getTime().time);
-                    socket.emit('updateTime_ods', {time: clock.getTime().time});
-                    if(clock.getTime().time == 0) {
-                        odsba.pause();
-                        alarmEnd.play();
-                    }
-                    })
-            })
-
-            socket.on('stopClock_ods', function(data){
-                odsba.pause();
-                clock.stop();
-            })
-
-            socket.on('resetClock_ods', function(data){
-                odsba.pause();
-                odsba.currentTime = 0;
-                clock.stop();
-                clock.setTime(3600);
-                $('#cd_seconds').val(60);
-                $('#hints').html("HINTS...");
-            })
-
-            socket.on('changeTime_ods', function(data){
-                $('#cd_seconds').val(data)
-                clock.setTime($('#cd_seconds').val()*60);
-            })
-
-            socket.on('playPWmsg1_ods', function(data){
-                console.log("PLAY MSG 1");
-                pwmsg1.play();
-            })
-
-            socket.on('playPWmsg2_ods', function(data){
-                console.log("PLAY MSG 2");
-                odsba.pause();
-                pwmsg2.play();
-            })
-
-            socket.on('volumeChange_ods', function(data){
-                odsba.volume = data;
-                $('#cd_volume').val(data * 100);
-            })
-
-            socket.on('playNotif_ods', function(data){
-                notification.play();
-            })
-
-            $('#audio').on('click', function(){
-                console.log('clicked');
-            })
-
-            $('#hints').on('keyup', function(){
-                socket.emit('new_hint_ods', {hint: $('#hints').val()})
-            })
-
-
-            $('#btn_msg1').click(function(){
-                console.log("CLICKED 1");
-                socket.emit('play_pwmsg1_ods');
-            })
-
-            $('#btn_msg2').click(function(){
-                socket.emit('play_pwmsg2_ods');
-            })
-
-            // $('#hintbtn').on('click',function(){
-            //     console.log($('#hints').val())
-            //     socket.emit('new_hint', {hint: $('#hints').val()})
-            // })
-
-            $('#cd_start').on('click',function(){
-                socket.emit('start_clock_ods');
-
-            });
-
-            $('#cd_volume').on('change', function(){
-                var vol = 100;
-                if($('#cd_volume').val() < 100){
-                    vol = $('#cd_volume').val();
-                }
-                socket.emit('change_volume_ods', {volume: vol})
-            })
-
-            $('#cd_seconds').on('change', function(){
-                socket.emit('change_time_ods', {time: $('#cd_seconds').val()});
-            })
-
-            $('#ringer').on('click', function(){
-                socket.emit('notif_sound_ods');
-            })
-
-            $('#cd_stop').on('click', function(){
-                socket.emit('stop_clock_ods');
-            })
-
-            $('#cd_reset').on('click', function(){
-               socket.emit('reset_clock_ods');
-            })
-        })
-    </script>

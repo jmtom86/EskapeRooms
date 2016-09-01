@@ -1,4 +1,4 @@
-<div ng-controller="timerController">
+<div ng-controller="pwtimerController">
 	<div id="ringerbtn" class="row">
         <div class="col-xs-2">
             <a class="roomlinks" href="#/timer">PW</a>
@@ -6,25 +6,28 @@
         </div>
         <div  class="col-xs-1 col-xs-offset-9">
 
-            <input id="ringer" type="button" class="btn btn-secondary"/>
+            <input timer-directive id="ringer" attr="notif_sound" type="button" class="btn btn-secondary"/>
         </div>
     </div>
 		<div class = "row">
 			<div id="top" class="col-xs-12">
 				<h1 id="header">Professor White</h1>
                 <div id="clockbox">
-                    <div class="clock">
+                    <div id="apwclock" flip-clock>
                     
                     </div>
+                    <!-- <div class="clock">
+                    
+                    </div> -->
                     
                 </div>
                 <div class="form-inline" id="buttonbox">
-                    <input class="btn btn-secondary" type="button" value="Start" id="cd_start" />
-                    <input class="btn btn-secondary" type="button" value="Pause"  id="cd_stop" />
-                    <input class="btn btn-secondary" type="button" value="Reset" id="cd_reset" />
+                    <input class="btn btn-secondary" type="button" value="Start" id="cd_start" ng-click="startClock()" />
+                    <input class="btn btn-secondary" type="button" value="Pause"  id="cd_stop" ng-click="stopClock()" />
+                    <input class="btn btn-secondary" type="button" value="Reset" id="cd_reset" ng-click="resetClock()"/>
                     <div class="form-group" >
                         <label id="setsecs">Set Minutes:</label>
-                        <input class="form-control" type="text" value="60" id="cd_seconds" />
+                        <input class="form-control" type="text" value="60" id="cd_seconds" ng-model="min" ng-change="changeMin()" />
                     </div>
                 </div>
                 <div class="row" id="audioarea">
@@ -32,7 +35,7 @@
                         <div class="form-inline">
                             <div class="form-group">
                                 <label id="setvol">Volume:</label>
-                                <input class="form-control" type="text" value="100" id="cd_volume">
+                                <input class="form-control" type="text" value="100" id="cd_volume" ng-model="volume" ng-change="changeVol()">
                             </div>
                             
                         </div>
@@ -41,8 +44,8 @@
                     </div>
     
                     <div class="col-xs-2 col-xs-offset-7">
-                        <input class="btn btn-secondary" type="button" value="MSG1" id="btn_msg1" />
-                        <input class="btn btn-secondary" type="button" value="MSG2" id="btn_msg2" />
+                        <input timer-directive class="btn btn-secondary" type="button" attr="play_pwmsg1" value="MSG1" id="btn_msg1" />
+                        <input timer-directive class="btn btn-secondary" type="button" value="MSG2" attr="play_pwmsg2" id="btn_msg2" />
                     </div>    
                     
                 </div>
@@ -50,116 +53,7 @@
 			</div>
         <div class="row">
             <div id="bottom" >
-                <textarea class="col-xs-12" rows="6" cols="160" id="hints">HINTS...</textarea>
+                <textarea class="col-xs-12" ng-model="hints" ng-change="updateHints()" rows="6" cols="150" id="hints"></textarea>
             </div>
         </div>
 </div>
-<script type="text/javascript">
-        $(document).ready(function(){
-
-
-            var socket = io.connect();  
-            socket.emit("check_clock_time");
-            var clock = $('.clock').FlipClock({countdown:true, autoStart:false, clockFace: 'MinuteCounter'
-
-            })
-            clock.setTime(3600);
-
-            //SOCKET FUNCTIONS
-            socket.on('checkClock', function(data){
-                console.log("PW DATA ON LOAD");
-                console.log("TIME - ", data.time);
-                console.log("CLOCK ON - ", data.clockon);
-                clock.setTime(data.time);
-                if(data.clockon == true){
-                    clock.start();
-                }
-                $('#hints').html(data.hints);
-            });
-
-            socket.on('update_hints', function(data){
-                console.log(data);
-                $('#hints').html(data);
-            });
-
-            socket.on('startClock', function(data){
-
-
-                clock.start(function(){ 
-                    socket.emit('updateTime', {time: clock.getTime().time})
-                })
-            })
-
-            socket.on('stopClock', function(data){
-
-                clock.stop();
-            })
-
-            socket.on('resetClock', function(data){
-                clock.stop();
-                clock.setTime(3600);
-                $('#cd_seconds').val(60);
-                $('#hints').html("HINTS...");
-            })
-
-            socket.on('changeTime', function(data){
-                $('#cd_seconds').val(data)
-                clock.setTime($('#cd_seconds').val()*60);
-            })
-
-
-
-            socket.on('volumeChange', function(data){
-                $('#cd_volume').val(data * 100);
-                console.log(pwba.volume);
-            })
-
-            //jQuery FUNCTIONS
-
-            $('#audio').on('click', function(){
-                console.log('clicked');
-            })
-
-            $('#hints').on('keyup', function(){
-                socket.emit('new_hint', {hint: $('#hints').val()})
-            })
-
-            $('#btn_msg1').click(function(){
-                socket.emit('play_pwmsg1');
-            })
-
-            $('#btn_msg2').click(function(){
-                socket.emit('play_pwmsg2');
-            })
-
-
-            $('#cd_start').on('click',function(){
-                socket.emit('start_clock');
-
-            });
-
-            $('#cd_volume').on('change', function(){
-                var vol = 100;
-                if($('#cd_volume').val() < 100){
-                    vol = $('#cd_volume').val();
-                }
-                socket.emit('change_volume', {volume: vol})
-            })
-
-            $('#cd_seconds').on('change', function(){
-                socket.emit('change_time', {time: $('#cd_seconds').val()});
-            })
-
-            $('#ringer').on('click', function(){
-                socket.emit('notif_sound');
-            })
-
-            $('#cd_stop').on('click', function(){
-                socket.emit('stop_clock');
-            })
-
-            $('#cd_reset').on('click', function(){
-               socket.emit('reset_clock');
-            })
-        })
-    </script>
