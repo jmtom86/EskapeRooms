@@ -17,12 +17,17 @@ myApp.controller("loginController",function($scope, $location, mainFactory){
 
 myApp.controller("pwatimerController", function($scope, $location, socket){
 	console.log("PWA CONTROLLER")
-	$scope.volume = 100
+	$scope.volume = 100;
 	$scope.min = 60;
 	$scope.socket = socket;
 	$scope.clock;
 	$scope.hints = "HINTS...";
 	socket.emit("check_clock_time");
+	var msg2 = document.getElementById("apwmsg2")
+	msg2.onended = function(){
+		console.log("ENDED");
+		document.getElementById("apwba").play();
+	}
 	socket.on("checkClock", function(data) {
 		console.log(data);
 		// var clock = document.getElementById("apwclock");
@@ -117,6 +122,10 @@ myApp.controller("pwatimerController", function($scope, $location, socket){
 	socket.on("resetClock", function(data){
 		console.log("RESETTING")
 		var pwba = document.getElementById("apwba");
+		var msg1 = document.getElementById("apwmsg1");
+		var msg2 = document.getElementById("apwmsg2");
+		msg1.currentTime = 0;
+		msg2.currentTime = 0;
 		pwba.pause();
 		pwba.currentTime = 0;
 		$scope.clock.stop();
@@ -153,6 +162,7 @@ myApp.controller("pwatimerController", function($scope, $location, socket){
 				console.log("VOLUME", data);
 				$scope.volume = Math.floor(data * 100);
                 document.getElementById("apwba").volume = data;
+                console.log(document.getElementById("apwba").volume);
                 // document.getElementById("cd_volume").value= data * 100;
                 // console.log(pwba.volume);
             })
@@ -263,18 +273,26 @@ myApp.controller("odsatimerController", function($scope, $location, socket){
 	$scope.clock;
 	$scope.hints = "HINTS...";
 	socket.emit("check_clock_time_ods");
+	document.getElementById("aodsba").volume = .5;
+	var msg2 = document.getElementById("aodsmsg2");
+	msg2.onended = function(){
+		console.log("ENDED");
+		document.getElementById("aodsba").play();
+	}
 	socket.on("checkClockODS", function(data) {
-		console.log(data);
+		console.log(document.getElementById("aodsba").volume);
 		// var clock = document.getElementById("apwclock");
 		$scope.clock.setTime(data.time);
 		if(data.clockon == true){
 			var odsba = document.getElementById("aodsba");
+			// odsba.volume = .5;
 			odsba.currentTime = 3600-data.time;
 			odsba.play();
+			
 			$scope.clock.start();
 			
 		}
-
+		// console.log(document.getElementById("aodsba").volume);
 		$scope.hints = data.hints;
 		// clock.start();
 		// document.getElementById("apwclock").FlipClock({countdown:true, autoStart:false, clockFace: 'MinuteCounter'});
@@ -358,9 +376,13 @@ myApp.controller("odsatimerController", function($scope, $location, socket){
 
 	socket.on("resetClock_ods", function(data){
 		console.log("RESETTING")
-		var pwba = document.getElementById("apwba");
-		pwba.pause();
-		pwba.currentTime = 0;
+		var odsba = document.getElementById("aodsba");
+		var msg1 = document.getElementById("aodsmsg1");
+		var msg2 = document.getElementById("aodsmsg2");
+		msg1.currentTime = 0;
+		msg2.currentTime = 0;
+		odsba.pause();
+		odsba.currentTime = 0;
 		$scope.clock.stop();
 		$scope.clock.setTime(3600);
 		document.getElementById("cd_seconds").value = 60;
@@ -388,9 +410,10 @@ myApp.controller("odsatimerController", function($scope, $location, socket){
 	})
 
 	socket.on('volumeChange_ods', function(data){
-				console.log("VOLUME", document.getElementById("aodsba").volume);
+				
 				$scope.volume = Math.floor(data * 100);
-                document.getElementById("aodsba").volume = data;
+                document.getElementById("aodsba").volume = data/2;
+                console.log("VOLUME", document.getElementById("aodsba").volume);
                 // document.getElementById("cd_volume").value= data * 100;
                 // console.log(pwba.volume);
             })
