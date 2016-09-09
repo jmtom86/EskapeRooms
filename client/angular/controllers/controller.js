@@ -82,7 +82,7 @@ myApp.controller("pwatimerController", function($scope, $location, socket){
 
 	$scope.updateHints = function(){
 		console.log("KEY UP");
-		socket.emit('new_hint', {hint: $scope.hints});
+		socket.emit('new_hint_admin', {hint: $scope.hints});
 	}
 
 	socket.on("startClock", function(data){
@@ -139,7 +139,7 @@ myApp.controller("pwatimerController", function($scope, $location, socket){
 		$scope.clock.setTime(document.getElementById("cd_seconds").value * 60);
 	})
 
-	socket.on('update_hints', function(data){
+	socket.on('update_hints_admin', function(data){
 		console.log("-- NEW HINTS -- ");
 		console.log(data);
 		document.getElementById("hints").value = data;

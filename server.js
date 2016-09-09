@@ -40,12 +40,17 @@ io.sockets.on('connection', function (socket){
       io.emit("checkClock", {time: time, clockon: clockOn, hints: hints});
     })
 
-  	socket.on('new_hint', function(data){
+  	socket.on('new_hint_admin', function(data){
   		console.log("NEW HINT");
 
   		hints = data.hint;
   		io.emit('update_hints', hints);
   	})
+
+    socket.on('new_hint', function(data){
+      hints = data.hint;
+      io.emit('update_hints_admin', hints);
+    })
 
   	socket.on('start_clock', function(data){
       console.log("SERVER CLOCK START")
