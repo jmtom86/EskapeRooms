@@ -140,6 +140,8 @@ myApp.controller("pwatimerController", function($scope, $location, socket){
 	})
 
 	socket.on('update_hints', function(data){
+		console.log("-- NEW HINTS -- ");
+		console.log(data);
 		document.getElementById("hints").value = data;
 	})
 
