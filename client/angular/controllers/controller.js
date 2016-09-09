@@ -339,7 +339,7 @@ myApp.controller("odsatimerController", function($scope, $location, socket){
 
 	$scope.updateHints = function(){
 		console.log("KEY UP");
-		socket.emit('new_hint_ods', {hint: $scope.hints});
+		socket.emit('new_hint_ods_admin', {hint: $scope.hints});
 	}
 
 	socket.on("startClock_ods", function(data){
@@ -394,6 +394,10 @@ myApp.controller("odsatimerController", function($scope, $location, socket){
 	socket.on("changeTime_ods", function(data){
 		document.getElementById("cd_seconds").value = data;
 		$scope.clock.setTime(document.getElementById("cd_seconds").value * 60);
+	})
+
+	socket.on("update_hints_ods_admin", function(data){
+		document.getElementById("hints").value = data;
 	})
 
 	socket.on('playODSmsg1', function(data){
@@ -477,6 +481,11 @@ myApp.controller("odstimerController", function($scope, $location, socket){
 		socket.emit('change_time_ods', {time: document.getElementById("cd_seconds").value});
 	}
 
+	$scope.updateHints = function(){
+		console.log("KEY UP");
+		socket.emit('new_hint_ods', {hint: $scope.hints});
+	}
+
 	socket.on("startClock", function(data){
 		$scope.clock.start(function(){
 			socket.emit('updateTime_ods', {time: $scope.clock.getTime().time})
@@ -497,6 +506,10 @@ myApp.controller("odstimerController", function($scope, $location, socket){
 	socket.on("changeTime_ods", function(data){
 		document.getElementById("cd_seconds").value = data;
 		$scope.clock.setTime(document.getElementById("cd_seconds").value * 60);
+	})
+
+	socket.on("update_hints_ods", function(data){
+		document.getElementById("hints").value = data;
 	})
 
 	socket.on('volumeChange_ods', function(data){

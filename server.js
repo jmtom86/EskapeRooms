@@ -107,11 +107,16 @@ io.sockets.on('connection', function (socket){
       io.emit("checkClockODS", {time: timeODS, clockon: clockOnODS, hints: hintsODS});
     })
 
-    socket.on('new_hint_ods', function(data){
+    socket.on('new_hint_ods_admin', function(data){
       console.log("NEW HINT");
 
       hintsODS = data.hint;
       io.emit('update_hints_ods', hints);
+    })
+
+    socket.on('new_hint_ods', function(data){
+      hints = data.hint;
+      io.emit('update_hints_ods_admin', hints);
     })
 
     socket.on('start_clock_ods', function(data){
